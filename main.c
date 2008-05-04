@@ -9,9 +9,9 @@
 #include "word.h"
 #include "list.h"
 #include "string.h"
+#include "block.h"
 #include "dictionary.h"
 #include "machine.h"
-#include "block.h"
 #include "primitive.h"
 #include "parse.h"
 
@@ -29,6 +29,10 @@ machine_t *primitive_exit(machine_t *machine) {
     exit(1);
 }
 
+static object_t main_primitive(const char *name, primitive_t c_function) {
+    return word_new(string_new(name), primitive_new(c_function));
+}
+
 int main (int argc, const char *argv[]) {
     machine_t *machine;
     object_t quote;
@@ -40,11 +44,11 @@ int main (int argc, const char *argv[]) {
     object_t dictionary;
     list_initialize();
     machine_initialize();
-    primitive_one_plus = primitive_new("one_plus", one_plus);
-    primitive_parse_quote = primitive_new("[", parse_quote);
-    primitive_parse_definition = primitive_new(":", parse_definition);
-    quote_delimiter = primitive_new("]", primitive_exit);
-    definition_delimiter = primitive_new(";", primitive_exit);
+    primitive_one_plus = main_primitive("one_plus", one_plus);
+    primitive_parse_quote = main_primitive("[", parse_quote);
+    primitive_parse_definition = main_primitive(":", parse_definition);
+    quote_delimiter = main_primitive("]", primitive_exit);
+    definition_delimiter = main_primitive(";", primitive_exit);
     dictionary = dictionary_insert(list_nil, primitive_one_plus);
     dictionary = dictionary_insert(dictionary, primitive_parse_quote);
     dictionary = dictionary_insert(dictionary, quote_delimiter);

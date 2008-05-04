@@ -3,7 +3,6 @@
 #include "object.h"
 #include "word.h"
 #include "list.h"
-#include "block.h"
 #include "machine.h"
 #include "primitive.h"
 
@@ -30,12 +29,6 @@ machine_t *machine_copy(machine_t *self) {
     return copy;
 }
 
-static machine_t *machine_primitive(object_t primitive, machine_t *machine) {
-    primitive_t c_function;
-    c_function = *(primitive_t *)block_unbox(primitive);
-    return c_function(machine);
-}
-
 static machine_t *machine_loop(machine_t *machine, object_t r) {
     machine_core_t *core;
     machine = machine_copy(machine);
@@ -59,8 +52,8 @@ eval:
     }
 exec:
     r = word_definition(r);
-    if (object_is_block(r)) {
-        machine = machine_primitive(r, machine);
+    if (object_is_primitive(r)) {
+        machine = primitive_execute(r, machine);
         goto eval;
     } else
         goto call;

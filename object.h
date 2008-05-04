@@ -10,6 +10,7 @@ enum {
     OBJECT_FIXNUM_TAG,
     OBJECT_WORD_TAG,
     OBJECT_LIST_TAG,
+    OBJECT_PRIMITIVE_TAG,
     OBJECT_BLOCK_TAG
 };
 
@@ -20,4 +21,5 @@ void object_free(object_t);
 int object_is_fixnum(object_t);
 int object_is_word(object_t);
 int object_is_list(object_t);
+int object_is_primitive(object_t);
 int object_is_block(object_t);
