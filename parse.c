@@ -50,7 +50,7 @@ machine_t *parse_quote(machine_t *machine) {
     dictionary = machine->dictionary;
     delimiter = dictionary_find(dictionary, string_new("]"));
     quote = parse_until_word(machine, delimiter);
-    machine->core->data = list_new(list_new_1(quote), machine->core->data);
+    machine->core.data = list_new(list_new_1(quote), machine->core.data);
     return machine;
 }
 
@@ -83,8 +83,8 @@ label_scan_loop:
             if (parse_is_parsing_word(object)) {
                 object_t sub;
                 machine = machine_execute(machine, object);
-                sub = list_head(machine->core->data);
-                machine->core->data = list_tail(machine->core->data);
+                sub = list_head(machine->core.data);
+                machine->core.data = list_tail(machine->core.data);
                 parse_stack = list_append(sub, parse_stack);
                 goto label_scan_loop;
             }

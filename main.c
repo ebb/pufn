@@ -18,7 +18,7 @@
 machine_t *one_plus(machine_t *machine) {
     object_t *data_stack;
     object_t value;
-    data_stack = &machine->core->data;
+    data_stack = &machine->core.data;
     value = list_head(*data_stack);
     value = fixnum_new(1 + fixnum_unbox(value));
     *data_stack = list_new(value, list_tail(*data_stack));
@@ -39,6 +39,7 @@ int main (int argc, const char *argv[]) {
     object_t definition_delimiter;
     object_t dictionary;
     list_initialize();
+    machine_initialize();
     primitive_one_plus = primitive_new("one_plus", one_plus);
     primitive_parse_quote = primitive_new("[", parse_quote);
     primitive_parse_definition = primitive_new(":", parse_definition);
@@ -52,6 +53,6 @@ int main (int argc, const char *argv[]) {
     machine = machine_new(dictionary);
     quote = parse_file(machine, "/Users/eric/tmp/test.cufn");
     machine = machine_call(machine, quote);
-    print_object(machine->core->data);
+    print_object(machine->core.data);
     return 0;
 }

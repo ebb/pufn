@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "/usr/include/string.h"
 #include "object.h"
 #include "word.h"
 #include "list.h"
@@ -6,42 +7,26 @@
 #include "machine.h"
 #include "primitive.h"
 
-/* machine_loop deps:
- *  data:
- *   machine_t (members: core)
- *   machine_core_t (members: call, data)
- *  stack:
- *   list_new
- *   list_empty
- *   list_head
- *   list_tail
- *   list_append
- *  dispatch:
- *   object_is_word
- *   object_is_block
- *  definitions:
- *   word_definition
- *  primitives:
- *   block_execute
- */
+static machine_t machine_prototype;
+
+void machine_initialize() {
+    machine_prototype.core.call = list_nil;
+    machine_prototype.core.data = list_nil;
+    machine_prototype.retain = list_nil;
+    machine_prototype.dictionary = list_nil;
+}
 
 machine_t *machine_new(object_t dictionary) {
     machine_t *machine;
-    machine = (machine_t *)malloc(sizeof(machine_t));
-    machine->core = (machine_core_t *)malloc(sizeof(machine_core_t));
-    machine->core->call = list_nil;
-    machine->core->data = list_nil;
-    machine->retain = list_nil;
+    machine = machine_copy(&machine_prototype);
     machine->dictionary = dictionary;
     return machine;
 }
 
 machine_t *machine_copy(machine_t *self) {
     machine_t *copy;
-    copy = machine_new(self->dictionary);
-    copy->core->call = self->core->call;
-    copy->core->data = self->core->data;
-    copy->retain = self->retain;
+    copy = (machine_t *)malloc(sizeof(machine_t));
+    memcpy(copy, self, sizeof(machine_t));
     return copy;
 }
 
@@ -54,7 +39,7 @@ static machine_t *machine_primitive(object_t primitive, machine_t *machine) {
 static machine_t *machine_loop(machine_t *machine, object_t r) {
     machine_core_t *core;
     machine = machine_copy(machine);
-    core = machine->core;
+    core = &machine->core;
     if (object_is_word(r))
         goto exec;
 call:

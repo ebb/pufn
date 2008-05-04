@@ -3,11 +3,12 @@ typedef struct {
 } machine_core_t;
 
 typedef struct {
-    machine_core_t *core;
+    machine_core_t core;
     object_t retain;
     object_t dictionary;
 } machine_t;
 
+void machine_initialize();
 machine_t *machine_new(object_t);
 machine_t *machine_copy(machine_t *);
 machine_t *machine_call(machine_t *, object_t);
