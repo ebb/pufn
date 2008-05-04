@@ -1,0 +1,181 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include "/usr/include/string.h"
+#include "object.h"
+#include "parse.h"
+#include "string.h"
+#include "list.h"
+#include "fixnum.h"
+#include "word.h"
+#include "dictionary.h"
+#include "machine.h"
+
+#define PARSE_LINE_MAX 1024
+#define PARSE_TEXT_MAX 1024
+
+static char parse_line_buffer[PARSE_LINE_MAX];
+static char *parse_text[PARSE_TEXT_MAX];
+static int parse_line;
+static int parse_column;
+static int parse_line_count;
+
+object_t parse_file(object_t machine, const char *filename) {
+    FILE *file;
+    object_t phony_word;
+    file = fopen(filename, "r");
+    if (file == 0)
+        exit(1);
+    parse_line_count = 0;
+    while (fgets(parse_line_buffer, PARSE_LINE_MAX, file) != 0) {
+        parse_text[parse_line_count] =
+            (char *)malloc(strlen(parse_line_buffer));
+        strcpy(parse_text[parse_line_count], parse_line_buffer);
+        ++parse_line_count;
+    }
+    parse_line = 0;
+    parse_column = 0;
+    phony_word = word_new(string_new(""), list_nil);
+    return parse_until_word(machine, phony_word);
+}
+
+int parse_is_parsing_word(object_t word) {
+    return (   0 == strcmp(string_unbox(word_name(word)), "[")
+            || 0 == strcmp(string_unbox(word_name(word)), ":"));
+}
+
+object_t parse_quote(object_t machine) {
+    object_t dictionary;
+    object_t delimiter;
+    object_t quote;
+    dictionary = machine_dictionary(machine);
+    delimiter = dictionary_find(dictionary, string_new("]"));
+    quote = parse_until_word(machine, delimiter);
+    return machine_data_push(machine, list_new_1(quote));
+}
+
+object_t parse_definition(object_t machine) {
+    object_t dictionary;
+    object_t delimiter;
+    object_t name;
+    object_t quote;
+    dictionary = machine_dictionary(machine);
+    delimiter = dictionary_find(dictionary, string_new(";"));
+    if (parse_token(&name)) {
+        object_t word;
+        quote = parse_until_word(machine, delimiter);
+        word = word_new(name, quote);
+        dictionary = dictionary_insert(dictionary, word);
+        return machine_replace_dictionary(machine, dictionary);
+    } else
+        exit(1);
+}
+
+object_t parse_until_word(object_t machine, object_t stop_word) {
+    object_t parse_stack;
+    object_t object;
+    parse_stack = list_nil;
+label_scan_loop:
+    if (parse_scan(machine, &object)) {
+        if (object_is_word(object)) {
+            if (object_eq(stop_word, object))
+                goto label_done;
+            if (parse_is_parsing_word(object)) {
+                object_t sub;
+                machine = machine_execute(machine, object);
+                machine = machine_data_pop(machine, &sub);
+                parse_stack = list_append(sub, parse_stack);
+                goto label_scan_loop;
+            }
+        }
+        parse_stack = list_new(object, parse_stack);
+        goto label_scan_loop;
+    }
+label_done:
+    return list_reverse(parse_stack);
+}
+
+void parse_define(object_t word, object_t quote) {
+    word_set_definition(word, quote);
+}
+
+int parse_still_parsing() {
+    return parse_line < parse_line_count;
+}
+
+int parse_still_parsing_line() {
+    return parse_column < strlen(parse_text[parse_line]);
+}
+
+int parse_column_is_blank() {
+    char c;
+    c = parse_text[parse_line][parse_column];
+    switch (c) {
+        case ' ': return 1;
+        case '\n': return 1;
+        default: return 0;
+    }
+}
+
+void parse_skip_blank() {
+    char *line;
+    size_t len;
+    line = parse_text[parse_line];
+    len = strlen(line);
+    while (parse_column < len && parse_column_is_blank())
+        ++parse_column;
+}
+
+void parse_skip_word() {
+    char *line;
+    size_t len;
+    line = parse_text[parse_line];
+    len = strlen(line);
+    while (parse_column < len && !parse_column_is_blank())
+        ++parse_column;
+}
+
+void parse_next_line() {
+    ++parse_line;
+    parse_column = 0;
+}
+
+int parse_token(object_t *token) {
+label_top:
+    if (parse_still_parsing()) {
+        parse_skip_blank();
+        if (parse_still_parsing_line()) {
+            int begin, end, i;
+            char buffer[PARSE_LINE_MAX];
+            begin = parse_column;
+            parse_skip_word();
+            end = parse_column;
+            for (i = 0; begin + i < end; ++i)
+                buffer[i] = parse_text[parse_line][begin + i];
+            buffer[end - begin] = '\0';
+            *token = string_new(buffer);
+            return 1;
+        } else {
+            parse_next_line();
+            goto label_top;
+        }
+    } else
+        return 0;
+}
+
+int parse_scan(object_t machine, object_t *object) {
+    object_t token;
+    int number;
+    char *end;
+    if (!parse_token(&token))
+        return 0;
+    number = (int)strtol(string_unbox(token), &end, 10);
+    if (end == string_unbox(token)) {
+        object_t dictionary;
+        dictionary = machine_dictionary(machine);
+        *object = dictionary_find(dictionary, token);
+        return 1;
+    } else {
+        *object = fixnum_new(number);
+        return 1;
+    }
+}

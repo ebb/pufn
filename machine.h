@@ -1,0 +1,15 @@
+object_t machine_new();
+object_t machine_return_stack(object_t);
+object_t machine_data_stack(object_t);
+object_t machine_retain_stack(object_t);
+object_t machine_dictionary(object_t);
+object_t machine_replace_return_stack(object_t, object_t);
+object_t machine_replace_data_stack(object_t, object_t);
+object_t machine_replace_retain_stack(object_t, object_t);
+object_t machine_replace_dictionary(object_t, object_t);
+object_t machine_return_push(object_t, object_t);
+object_t machine_data_push(object_t, object_t);
+object_t machine_data_pop(object_t, object_t *);
+void machine_return_pop(object_t, object_t *, object_t *);
+object_t machine_execute(object_t, object_t);
+object_t machine_call(object_t, object_t);
