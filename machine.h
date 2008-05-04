@@ -1,15 +1,14 @@
-object_t machine_new();
-object_t machine_return_stack(object_t);
-object_t machine_data_stack(object_t);
-object_t machine_retain_stack(object_t);
-object_t machine_dictionary(object_t);
-object_t machine_replace_return_stack(object_t, object_t);
-object_t machine_replace_data_stack(object_t, object_t);
-object_t machine_replace_retain_stack(object_t, object_t);
-object_t machine_replace_dictionary(object_t, object_t);
-object_t machine_return_push(object_t, object_t);
-object_t machine_data_push(object_t, object_t);
-object_t machine_data_pop(object_t, object_t *);
-void machine_return_pop(object_t, object_t *, object_t *);
-object_t machine_execute(object_t, object_t);
-object_t machine_call(object_t, object_t);
+typedef struct {
+    object_t call, data;
+} machine_core_t;
+
+typedef struct {
+    machine_core_t *core;
+    object_t retain;
+    object_t dictionary;
+} machine_t;
+
+machine_t *machine_new(object_t);
+machine_t *machine_copy(machine_t *);
+machine_t *machine_call(machine_t *, object_t);
+machine_t *machine_execute(machine_t *, object_t);

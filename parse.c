@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include "/usr/include/string.h"
 #include "object.h"
-#include "parse.h"
 #include "string.h"
 #include "list.h"
 #include "fixnum.h"
 #include "word.h"
 #include "dictionary.h"
 #include "machine.h"
+#include "parse.h"
 
 #define PARSE_LINE_MAX 1024
 #define PARSE_TEXT_MAX 1024
@@ -19,7 +19,7 @@ static int parse_line;
 static int parse_column;
 static int parse_line_count;
 
-object_t parse_file(object_t machine, const char *filename) {
+object_t parse_file(machine_t *machine, const char *filename) {
     FILE *file;
     object_t phony_word;
     file = fopen(filename, "r");
@@ -43,34 +43,35 @@ int parse_is_parsing_word(object_t word) {
             || 0 == strcmp(string_unbox(word_name(word)), ":"));
 }
 
-object_t parse_quote(object_t machine) {
+machine_t *parse_quote(machine_t *machine) {
     object_t dictionary;
     object_t delimiter;
     object_t quote;
-    dictionary = machine_dictionary(machine);
+    dictionary = machine->dictionary;
     delimiter = dictionary_find(dictionary, string_new("]"));
     quote = parse_until_word(machine, delimiter);
-    return machine_data_push(machine, list_new_1(quote));
+    machine->core->data = list_new(list_new_1(quote), machine->core->data);
+    return machine;
 }
 
-object_t parse_definition(object_t machine) {
+machine_t *parse_definition(machine_t *machine) {
     object_t dictionary;
     object_t delimiter;
     object_t name;
     object_t quote;
-    dictionary = machine_dictionary(machine);
+    dictionary = machine->dictionary;
     delimiter = dictionary_find(dictionary, string_new(";"));
     if (parse_token(&name)) {
         object_t word;
         quote = parse_until_word(machine, delimiter);
         word = word_new(name, quote);
-        dictionary = dictionary_insert(dictionary, word);
-        return machine_replace_dictionary(machine, dictionary);
+        machine->dictionary = dictionary_insert(dictionary, word);
+        return machine;
     } else
         exit(1);
 }
 
-object_t parse_until_word(object_t machine, object_t stop_word) {
+object_t parse_until_word(machine_t *machine, object_t stop_word) {
     object_t parse_stack;
     object_t object;
     parse_stack = list_nil;
@@ -82,7 +83,8 @@ label_scan_loop:
             if (parse_is_parsing_word(object)) {
                 object_t sub;
                 machine = machine_execute(machine, object);
-                machine = machine_data_pop(machine, &sub);
+                sub = list_head(machine->core->data);
+                machine->core->data = list_tail(machine->core->data);
                 parse_stack = list_append(sub, parse_stack);
                 goto label_scan_loop;
             }
@@ -162,7 +164,7 @@ label_top:
         return 0;
 }
 
-int parse_scan(object_t machine, object_t *object) {
+int parse_scan(machine_t *machine, object_t *object) {
     object_t token;
     int number;
     char *end;
@@ -171,7 +173,7 @@ int parse_scan(object_t machine, object_t *object) {
     number = (int)strtol(string_unbox(token), &end, 10);
     if (end == string_unbox(token)) {
         object_t dictionary;
-        dictionary = machine_dictionary(machine);
+        dictionary = machine->dictionary;
         *object = dictionary_find(dictionary, token);
         return 1;
     } else {

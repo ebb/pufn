@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include "object.h"
-#include "primitive.h"
-#include "block.h"
 #include "word.h"
 #include "string.h"
+#include "machine.h"
+#include "primitive.h"
+#include "block.h"
 
 object_t primitive_new(const char *name, primitive_t c_function) {
     object_t self;
