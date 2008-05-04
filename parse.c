@@ -10,6 +10,15 @@
 #include "machine.h"
 #include "parse.h"
 
+/* TODO: parse strings
+ *  treat CHAR: " specially during tokenization
+ *  pull out the characters delimited by the quotation marks
+ *  hand the string to a handler as follows:
+ *    "foo" goes to the normal string parser
+ *    P"tmp" goes to a parsing word named "P"
+ *  the dispatch is featuritis -- put it off
+ */
+
 #define PARSE_LINE_MAX 1024
 #define PARSE_TEXT_MAX 1024
 
