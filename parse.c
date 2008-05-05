@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "/usr/include/string.h"
+#include "fail.h"
 #include "object.h"
 #include "string.h"
 #include "list.h"
@@ -33,7 +34,7 @@ object_t parse_file(machine_t *machine, const char *filename) {
     object_t phony_word;
     file = fopen(filename, "r");
     if (file == 0)
-        exit(1);
+        fail();
     parse_line_count = 0;
     while (fgets(parse_line_buffer, PARSE_LINE_MAX, file) != 0) {
         parse_text[parse_line_count] =
@@ -77,7 +78,7 @@ machine_t *parse_definition(machine_t *machine) {
         machine->dictionary = dictionary_insert(dictionary, word);
         return machine;
     } else
-        exit(1);
+        fail();
 }
 
 object_t parse_until_word(machine_t *machine, object_t stop_word) {

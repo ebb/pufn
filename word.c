@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "fail.h"
 #include "object.h"
 #include "word.h"
 
@@ -13,7 +14,7 @@ object_t word_new(object_t name, object_t definition) {
 
 object_t *word_unbox(object_t self) {
     if (!object_is_word(self))
-        exit(1);
+        fail();
     return (object_t *)self.data.pointer;
 }
 

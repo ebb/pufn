@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "fail.h"
 #include "object.h"
 #include "fixnum.h"
 
@@ -11,6 +12,6 @@ object_t fixnum_new(int n) {
 
 int fixnum_unbox(object_t self) {
     if (!object_is_fixnum(self))
-        exit(1);
+        fail();
     return self.data.number;
 }

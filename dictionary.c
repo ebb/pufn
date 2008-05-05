@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "/usr/include/string.h"
+#include "fail.h"
 #include "object.h"
 #include "dictionary.h"
 #include "list.h"
@@ -20,7 +21,7 @@ object_t dictionary_find(object_t self, object_t name) {
     name_unboxed = string_unbox(name);
 label_top:
     if (object_eq(self, list_nil))
-        exit(1);
+        fail();
     entry = list_head(self);
     if (!strcmp(name_unboxed, string_unbox(list_head(entry))))
         return list_nth(entry, 1);

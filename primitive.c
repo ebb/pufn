@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "fail.h"
 #include "object.h"
 #include "machine.h"
 #include "primitive.h"
@@ -13,7 +14,7 @@ object_t primitive_new(primitive_t c_function) {
 
 primitive_t *primitive_unbox(object_t self) {
     if (!object_is_primitive(self))
-        exit(1);
+        fail();
     return (primitive_t *)self.data.pointer;
 }
 

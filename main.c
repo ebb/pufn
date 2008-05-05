@@ -1,9 +1,5 @@
-/* initial interpreter written in C
- * used to write interpreter for more complete language
- * second language gives access to its own interpreter
- */
-
 #include <stdlib.h>
+#include "fail.h"
 #include "object.h"
 #include "fixnum.h"
 #include "word.h"
@@ -25,8 +21,9 @@ machine_t *one_plus(machine_t *machine) {
     return machine;
 }
 
-machine_t *primitive_exit(machine_t *machine) {
-    exit(1);
+machine_t *primitive_fail(machine_t *machine) {
+    fail();
+    return 0;
 }
 
 static object_t main_primitive(const char *name, primitive_t c_function) {
@@ -47,8 +44,8 @@ int main (int argc, const char *argv[]) {
     primitive_one_plus = main_primitive("one_plus", one_plus);
     primitive_parse_quote = main_primitive("[", parse_quote);
     primitive_parse_definition = main_primitive(":", parse_definition);
-    quote_delimiter = main_primitive("]", primitive_exit);
-    definition_delimiter = main_primitive(";", primitive_exit);
+    quote_delimiter = main_primitive("]", primitive_fail);
+    definition_delimiter = main_primitive(";", primitive_fail);
     dictionary = dictionary_insert(list_nil, primitive_one_plus);
     dictionary = dictionary_insert(dictionary, primitive_parse_quote);
     dictionary = dictionary_insert(dictionary, quote_delimiter);

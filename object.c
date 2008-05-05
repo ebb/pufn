@@ -15,6 +15,7 @@ void object_free(object_t self) {
         case OBJECT_WORD_TAG:
         case OBJECT_LIST_TAG:
         case OBJECT_PRIMITIVE_TAG:
+        case OBJECT_STRING_TAG:
         case OBJECT_BLOCK_TAG:
             free(self.data.pointer);
     }
@@ -34,6 +35,10 @@ int object_is_list(object_t self) {
 
 int object_is_primitive(object_t self) {
     return self.tag == OBJECT_PRIMITIVE_TAG;
+}
+
+int object_is_string(object_t self) {
+    return self.tag == OBJECT_STRING_TAG;
 }
 
 int object_is_block(object_t self) {

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "fail.h"
 #include "object.h"
 #include "list.h"
 
@@ -13,7 +14,7 @@ object_t list_new(object_t head, object_t tail) {
 
 object_t *list_unbox(object_t self) {
     if (!object_is_list(self))
-        exit(1);
+        fail();
     return (object_t *)self.data.pointer;
 }
 
@@ -41,13 +42,13 @@ object_t list_new_4(object_t a, object_t b, object_t c, object_t d) {
 
 object_t list_head(object_t self) {
     if (!object_is_list(self))
-        exit(1);
+        fail();
     return list_unbox(self)[0];
 }
 
 object_t list_tail(object_t self) {
     if (!object_is_list(self))
-        exit(1);
+        fail();
     return list_unbox(self)[1];
 }
 
@@ -72,10 +73,10 @@ object_t list_append(object_t a, object_t b) {
 
 object_t list_nth(object_t self, int n) {
     if (n < 0)
-        exit(1);
+        fail();
 label_top:
     if (object_eq(self, list_nil))
-        exit(1);
+        fail();
     else if (n == 0)
         return list_head(self);
     else {
@@ -88,11 +89,11 @@ label_top:
 object_t list_replace_nth(object_t self, int n, object_t elt) {
     object_t acc;
     if (n < 0)
-        exit(1);
+        fail();
     acc = list_nil;
 label_top:
     if (object_eq(self, list_nil))
-        exit(1);
+        fail();
     else if (n == 0)
         return list_reverse_append(acc, list_new(elt, list_tail(self)));
     else {
