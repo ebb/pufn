@@ -41,14 +41,10 @@ object_t list_new_4(object_t a, object_t b, object_t c, object_t d) {
 }
 
 object_t list_head(object_t self) {
-    if (!object_is_list(self))
-        fail();
     return list_unbox(self)[0];
 }
 
 object_t list_tail(object_t self) {
-    if (!object_is_list(self))
-        fail();
     return list_unbox(self)[1];
 }
 
@@ -75,8 +71,10 @@ object_t list_nth(object_t self, int n) {
     if (n < 0)
         fail();
 label_top:
-    if (object_eq(self, list_nil))
+    if (object_eq(self, list_nil)) {
         fail();
+        return list_nil;
+    }
     else if (n == 0)
         return list_head(self);
     else {
@@ -92,8 +90,10 @@ object_t list_replace_nth(object_t self, int n, object_t elt) {
         fail();
     acc = list_nil;
 label_top:
-    if (object_eq(self, list_nil))
+    if (object_eq(self, list_nil)) {
         fail();
+        return list_nil;
+    }
     else if (n == 0)
         return list_reverse_append(acc, list_new(elt, list_tail(self)));
     else {
