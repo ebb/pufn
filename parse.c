@@ -44,6 +44,7 @@ object_t parse_file(machine_t *machine, const char *filename) {
         strcpy(parse_text[parse_line_count], parse_line_buffer);
         ++parse_line_count;
     }
+    fclose(file);
     parse_line = 0;
     parse_column = 0;
     phony_word = word_new(string_new(""), list_nil);
