@@ -58,6 +58,7 @@ int main (int argc, const char *argv[]) {
     object_t primitive_parse_definition;
     object_t quote_delimiter;
     object_t definition_delimiter;
+    object_t primitive_parse_wrapper;
     object_t dictionary;
     boolean_initialize();
     list_initialize();
@@ -69,6 +70,7 @@ int main (int argc, const char *argv[]) {
     primitive_parse_definition = main_parsing_primitive(":", parse_definition);
     quote_delimiter = main_primitive("]", primitive_fail);
     definition_delimiter = main_primitive(";", primitive_fail);
+    primitive_parse_wrapper = main_parsing_primitive("\\", parse_wrapper);
     dictionary = list_nil;
     dictionary = dictionary_insert(dictionary, primitive_true);
     dictionary = dictionary_insert(dictionary, primitive_false);
@@ -77,6 +79,7 @@ int main (int argc, const char *argv[]) {
     dictionary = dictionary_insert(dictionary, quote_delimiter);
     dictionary = dictionary_insert(dictionary, primitive_parse_definition);
     dictionary = dictionary_insert(dictionary, definition_delimiter);
+    dictionary = dictionary_insert(dictionary, primitive_parse_wrapper);
     machine = machine_new(dictionary);
     quote = parse_file(machine, "/Users/eric/cufn/tests.stuf");
     machine = machine_call(machine, quote);

@@ -5,6 +5,7 @@
 #include "object.h"
 #include "word.h"
 #include "list.h"
+#include "wrapper.h"
 #include "machine.h"
 #include "primitive.h"
 
@@ -48,6 +49,8 @@ eval:
         if (object_is_word(r))
             goto exec;
         else {
+            if (object_is_wrapper(r))
+                r = wrapper_unbox(r);
             core->data = list_new(r, core->data);
             goto eval;
         }

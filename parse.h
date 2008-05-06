@@ -2,6 +2,7 @@
 
 object_t parse_file(machine_t *, const char *);
 int parse_is_parsing_word(object_t);
+machine_t *parse_wrapper(machine_t *);
 machine_t *parse_quote(machine_t *);
 machine_t *parse_definition(machine_t *);
 object_t parse_until_word(machine_t *, object_t);

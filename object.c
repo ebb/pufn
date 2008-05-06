@@ -18,6 +18,7 @@ void object_free(object_t self) {
         case OBJECT_LIST_TAG:
         case OBJECT_PRIMITIVE_TAG:
         case OBJECT_STRING_TAG:
+        case OBJECT_WRAPPER_TAG:
         case OBJECT_BLOCK_TAG:
             free(self.data.pointer);
     }
@@ -45,6 +46,10 @@ int object_is_string(object_t self) {
 
 int object_is_boolean(object_t self) {
     return self.tag == OBJECT_BOOLEAN_TAG;
+}
+
+int object_is_wrapper(object_t self) {
+    return self.tag == OBJECT_WRAPPER_TAG;
 }
 
 int object_is_block(object_t self) {

@@ -10,6 +10,7 @@
 #include "fixnum.h"
 #include "word.h"
 #include "boolean.h"
+#include "wrapper.h"
 #include "dictionary.h"
 #include "machine.h"
 #include "parse.h"
@@ -54,6 +55,19 @@ object_t parse_file(machine_t *machine, const char *filename) {
 
 int parse_is_parsing_word(object_t word) {
     return boolean_unbox(word_parsing_p(word));
+}
+
+machine_t *parse_wrapper(machine_t *machine) {
+    object_t dictionary;
+    object_t name;
+    object_t word;
+    dictionary = machine->dictionary;
+    if (!parse_token(&name))
+        fail();
+    word = dictionary_find(dictionary, name);
+    machine->core.data = list_new(list_new_1(wrapper_new(word)),
+                                  machine->core.data);
+    return machine;
 }
 
 machine_t *parse_quote(machine_t *machine) {
