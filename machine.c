@@ -62,9 +62,13 @@ exec:
 }
 
 machine_t *machine_call(machine_t *machine, object_t quote) {
+    if (!object_is_list(quote))
+        fail();
     return machine_loop(machine, quote);
 }
 
 machine_t *machine_execute(machine_t *machine, object_t word) {
+    if (!object_is_word(word))
+        fail();
     return machine_loop(machine, word);
 }
