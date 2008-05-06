@@ -1,3 +1,5 @@
+/* public domain */
+
 object_t parse_file(machine_t *, const char *);
 int parse_is_parsing_word(object_t);
 machine_t *parse_quote(machine_t *);

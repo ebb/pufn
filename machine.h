@@ -1,3 +1,5 @@
+/* public domain */
+
 typedef struct {
     object_t call, data;
 } machine_core_t;

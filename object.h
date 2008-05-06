@@ -1,3 +1,5 @@
+/* public domain */
+
 typedef struct {
     int tag;
     union {

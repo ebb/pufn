@@ -1,3 +1,5 @@
+/* public domain */
+
 object_t list_new(object_t, object_t);
 object_t *list_unbox(object_t);
 object_t list_nil;

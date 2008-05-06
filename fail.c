@@ -1,3 +1,5 @@
+/* public domain */
+
 #include <stdlib.h>
 #include <assert.h>
 #include "fail.h"

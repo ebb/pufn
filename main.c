@@ -1,3 +1,5 @@
+/* public domain */
+
 #include <stdlib.h>
 #include "fail.h"
 #include "object.h"

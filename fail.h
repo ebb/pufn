@@ -1,1 +1,3 @@
+/* public domain */
+
 void fail();

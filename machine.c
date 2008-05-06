@@ -1,3 +1,5 @@
+/* public domain */
+
 #include <stdlib.h>
 #include "/usr/include/string.h"
 #include "object.h"

@@ -1,3 +1,5 @@
+/* public domain */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "object.h"
