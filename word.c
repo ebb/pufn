@@ -32,3 +32,7 @@ object_t word_definition(object_t self) {
 object_t word_parsing_p(object_t self) {
     return word_unbox(self)[2];
 }
+
+void word_set_definition(object_t self, object_t definition) {
+    word_unbox(self)[1] = definition;
+}

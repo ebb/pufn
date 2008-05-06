@@ -29,6 +29,16 @@ machine_t *primitive_fail(machine_t *machine) {
     return 0;
 }
 
+machine_t *true(machine_t *machine) {
+    machine->core.data = list_new(boolean_t, machine->core.data);
+    return machine;
+}
+
+machine_t *false(machine_t *machine) {
+    machine->core.data = list_new(boolean_f, machine->core.data);
+    return machine;
+}
+
 static object_t main_primitive(const char *name, primitive_t c_function) {
     return word_new(string_new(name), primitive_new(c_function), boolean_f);
 }
@@ -41,6 +51,8 @@ static object_t main_parsing_primitive(const char *name,
 int main (int argc, const char *argv[]) {
     machine_t *machine;
     object_t quote;
+    object_t primitive_true;
+    object_t primitive_false;
     object_t primitive_one_plus;
     object_t primitive_parse_quote;
     object_t primitive_parse_definition;
@@ -50,18 +62,23 @@ int main (int argc, const char *argv[]) {
     boolean_initialize();
     list_initialize();
     machine_initialize();
+    primitive_true = main_primitive("t", true);
+    primitive_false = main_primitive("f", false);
     primitive_one_plus = main_primitive("one_plus", one_plus);
     primitive_parse_quote = main_parsing_primitive("[", parse_quote);
     primitive_parse_definition = main_parsing_primitive(":", parse_definition);
     quote_delimiter = main_primitive("]", primitive_fail);
     definition_delimiter = main_primitive(";", primitive_fail);
-    dictionary = dictionary_insert(list_nil, primitive_one_plus);
+    dictionary = list_nil;
+    dictionary = dictionary_insert(dictionary, primitive_true);
+    dictionary = dictionary_insert(dictionary, primitive_false);
+    dictionary = dictionary_insert(dictionary, primitive_one_plus);
     dictionary = dictionary_insert(dictionary, primitive_parse_quote);
     dictionary = dictionary_insert(dictionary, quote_delimiter);
     dictionary = dictionary_insert(dictionary, primitive_parse_definition);
     dictionary = dictionary_insert(dictionary, definition_delimiter);
     machine = machine_new(dictionary);
-    quote = parse_file(machine, "/Users/eric/tmp/test.cufn");
+    quote = parse_file(machine, "/Users/eric/cufn/tests.stuf");
     machine = machine_call(machine, quote);
     print_object(machine->core.data);
     return 0;

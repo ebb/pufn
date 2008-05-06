@@ -1,0 +1,3 @@
+: two_plus one_plus one_plus ;
+t f 3 two_plus
+

@@ -7,8 +7,11 @@
 #include "fixnum.h"
 #include "word.h"
 #include "list.h"
-#include "block.h"
+#include "boolean.h"
 #include "string.h"
+#include "block.h"
+#include "machine.h"
+#include "primitive.h"
 
 void print_object(object_t root) {
     switch (root.tag) {
@@ -27,8 +30,20 @@ void print_object(object_t root) {
             }
             printf("]");
             break;
+        case OBJECT_STRING_TAG:
+            printf("\"%s\"", string_unbox(root));
+        case OBJECT_PRIMITIVE_TAG:
+            printf("0x%x", (void *)primitive_unbox(root));
+        case OBJECT_BOOLEAN_TAG:
+            if (object_eq(root, boolean_t))
+                printf("t");
+            else
+                printf("f");
+            break;
         case OBJECT_BLOCK_TAG:
             printf("0x%x", block_unbox(root));
             break;
+        default:
+            fail();
     }
 }
