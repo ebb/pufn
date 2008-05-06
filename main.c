@@ -7,6 +7,7 @@
 #include "word.h"
 #include "list.h"
 #include "string.h"
+#include "boolean.h"
 #include "block.h"
 #include "dictionary.h"
 #include "machine.h"
@@ -29,7 +30,12 @@ machine_t *primitive_fail(machine_t *machine) {
 }
 
 static object_t main_primitive(const char *name, primitive_t c_function) {
-    return word_new(string_new(name), primitive_new(c_function));
+    return word_new(string_new(name), primitive_new(c_function), boolean_f);
+}
+
+static object_t main_parsing_primitive(const char *name, 
+                                       primitive_t c_function) {
+    return word_new(string_new(name), primitive_new(c_function), boolean_t);
 }
 
 int main (int argc, const char *argv[]) {
@@ -41,11 +47,12 @@ int main (int argc, const char *argv[]) {
     object_t quote_delimiter;
     object_t definition_delimiter;
     object_t dictionary;
+    boolean_initialize();
     list_initialize();
     machine_initialize();
     primitive_one_plus = main_primitive("one_plus", one_plus);
-    primitive_parse_quote = main_primitive("[", parse_quote);
-    primitive_parse_definition = main_primitive(":", parse_definition);
+    primitive_parse_quote = main_parsing_primitive("[", parse_quote);
+    primitive_parse_definition = main_parsing_primitive(":", parse_definition);
     quote_delimiter = main_primitive("]", primitive_fail);
     definition_delimiter = main_primitive(";", primitive_fail);
     dictionary = dictionary_insert(list_nil, primitive_one_plus);

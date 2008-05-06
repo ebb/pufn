@@ -9,6 +9,7 @@
 #include "list.h"
 #include "fixnum.h"
 #include "word.h"
+#include "boolean.h"
 #include "dictionary.h"
 #include "machine.h"
 #include "parse.h"
@@ -47,13 +48,12 @@ object_t parse_file(machine_t *machine, const char *filename) {
     fclose(file);
     parse_line = 0;
     parse_column = 0;
-    phony_word = word_new(string_new(""), list_nil);
+    phony_word = word_new(string_new(""), list_nil, boolean_f);
     return parse_until_word(machine, phony_word);
 }
 
 int parse_is_parsing_word(object_t word) {
-    return (   0 == strcmp(string_unbox(word_name(word)), "[")
-            || 0 == strcmp(string_unbox(word_name(word)), ":"));
+    return boolean_unbox(word_parsing_p(word));
 }
 
 machine_t *parse_quote(machine_t *machine) {
@@ -77,11 +77,11 @@ machine_t *parse_definition(machine_t *machine) {
     if (parse_token(&name)) {
         object_t word;
         quote = parse_until_word(machine, delimiter);
-        word = word_new(name, quote);
+        word = word_new(name, quote, boolean_f);
         machine->dictionary = dictionary_insert(dictionary, word);
-        return machine;
     } else
         fail();
+    return machine;
 }
 
 object_t parse_until_word(machine_t *machine, object_t stop_word) {

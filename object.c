@@ -43,6 +43,10 @@ int object_is_string(object_t self) {
     return self.tag == OBJECT_STRING_TAG;
 }
 
+int object_is_boolean(object_t self) {
+    return self.tag == OBJECT_BOOLEAN_TAG;
+}
+
 int object_is_block(object_t self) {
     return self.tag == OBJECT_BLOCK_TAG;
 }
