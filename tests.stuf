@@ -1,4 +1,5 @@
 : pufn \ pufn ;
+: one_plus 1 + ;
 : two_plus one_plus one_plus ;
 t f 3 two_plus [ 88 ] \ two_plus
 5 [ two_plus two_plus ] call

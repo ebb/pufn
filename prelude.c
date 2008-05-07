@@ -12,6 +12,8 @@
 #include "primitive.h"
 #include "prelude.h"
 #include "print.h"
+#include "parse.h"
+#include "fail.h"
 
 object_t prelude;
 
@@ -30,6 +32,16 @@ static void prelude_push(machine_t *machine, object_t object) {
     machine->core.data = list_new(object, machine->core.data);
 }
 
+machine_t *prelude__t(machine_t *machine) {
+    prelude_push(machine, boolean_t);
+    return machine;
+}
+
+machine_t *prelude__f(machine_t *machine) {
+    prelude_push(machine, boolean_f);
+    return machine;
+}
+
 machine_t *prelude__call(machine_t *machine) {
     object_t quote;
     quote = prelude_pop(machine);
@@ -41,6 +53,26 @@ machine_t *prelude__execute(machine_t *machine) {
     object_t word;
     word = prelude_pop(machine);
     machine->core.call = list_new(word, machine->core.call);
+    return machine;
+}
+
+machine_t *prelude__curry(machine_t *machine) {
+    object_t quote;
+    object_t object;
+    quote = prelude_pop(machine);
+    object = prelude_pop(machine);
+    quote = list_new(object, quote);
+    prelude_push(machine, quote);
+    return machine;
+}
+
+machine_t *prelude__compose(machine_t *machine) {
+    object_t quote1, quote2;
+    object_t composed;
+    quote2 = prelude_pop(machine);
+    quote1 = prelude_pop(machine);
+    composed = list_append(quote1, quote2);
+    prelude_push(machine, composed);
     return machine;
 }
 
@@ -150,6 +182,28 @@ machine_t *prelude__newline(machine_t *machine) {
     return machine;
 }
 
+machine_t *prelude__parse_definition(machine_t *machine) {
+    return parse_definition(machine);
+}
+
+machine_t *prelude__parse_quote(machine_t *machine) {
+    return parse_quote(machine);
+}
+
+machine_t *prelude__parse_wrapper(machine_t *machine) {
+    return parse_wrapper(machine);
+}
+
+machine_t *prelude__quote_delimiter(machine_t *machine) {
+    fail();
+    return machine;
+}
+
+machine_t *prelude__definition_delimiter(machine_t *machine) {
+    fail();
+    return machine;
+}
+
 struct entry {
     const char *name;
     primitive_t definition;
@@ -157,6 +211,12 @@ struct entry {
 };
     
 struct entry entries[] = {
+    {
+        "t", prelude__t, 0
+    },
+    {
+        "f", prelude__f, 0
+    },
     {
          "call", prelude__call, 0
     },
@@ -201,6 +261,21 @@ struct entry entries[] = {
     },
     {
         "newline", prelude__newline, 0
+    },
+    {
+        ":", prelude__parse_definition, 1
+    },
+    {
+        "[", prelude__parse_quote, 1
+    },
+    {
+        "\\", prelude__parse_wrapper, 1
+    },
+    {
+        "]", prelude__quote_delimiter, 0
+    },
+    {
+        ";", prelude__definition_delimiter, 0
     }
 };
 
