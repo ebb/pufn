@@ -10,4 +10,5 @@ pufn
 : factorial 1 swap (factorial) ;
 5 factorial
 [ \ call 77 ] . newline
+[ 5 . newline continue 6 ] callcc 8
 

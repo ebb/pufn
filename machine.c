@@ -1,13 +1,14 @@
 /* public domain */
 
 #include <stdlib.h>
-#include "/usr/include/string.h"
+#include <string.h>
 #include "object.h"
 #include "word.h"
 #include "list.h"
 #include "wrapper.h"
 #include "machine.h"
 #include "primitive.h"
+#include "fail.h"
 
 static machine_t machine_prototype;
 
@@ -59,6 +60,7 @@ exec:
     r = word_definition(r);
     if (object_is_primitive(r)) {
         machine = primitive_execute(r, machine);
+        core = &machine->core;
         goto eval;
     } else
         goto call;

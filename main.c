@@ -1,6 +1,7 @@
 /* public domain */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "object.h"
 #include "list.h"
 #include "boolean.h"
@@ -17,8 +18,11 @@ int main (int argc, const char *argv[]) {
     machine_initialize();
     prelude_initialize();
     machine = machine_new(prelude);
-    quote = parse_file(machine, "/Users/eric/cufn/tests.stuf");
-    machine = machine_call(machine, quote);
+    while (--argc > 0) {
+        quote = parse_file(machine, argv[argc]);
+        machine = machine_call(machine, quote);
+    }
     print_object(machine->core.data);
+    printf("\n");
     return 0;
 }

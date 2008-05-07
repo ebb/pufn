@@ -10,6 +10,7 @@
 #include "dictionary.h"
 #include "machine.h"
 #include "primitive.h"
+#include "continuation.h"
 #include "prelude.h"
 #include "print.h"
 #include "parse.h"
@@ -74,6 +75,22 @@ machine_t *prelude__compose(machine_t *machine) {
     composed = list_append(quote1, quote2);
     prelude_push(machine, composed);
     return machine;
+}
+
+machine_t *prelude__callcc(machine_t *machine) {
+    object_t quote;
+    machine_t *copy;
+    quote = prelude_pop(machine);
+    copy = machine_copy(machine);
+    quote = list_new(continuation_new(copy), quote);
+    prelude_push(machine, quote);
+    return prelude__call(machine);
+}
+
+machine_t *prelude__continue(machine_t *machine) {
+    object_t continuation;
+    continuation = prelude_pop(machine);
+    return machine_copy(continuation_unbox(continuation));
 }
 
 machine_t *prelude__if(machine_t *machine) {
@@ -222,6 +239,18 @@ struct entry entries[] = {
     },
     {
         "execute", prelude__execute, 0
+    },
+    {
+        "curry", prelude__curry, 0
+    },
+    {
+        "compose", prelude__compose, 0
+    },
+    {
+        "callcc", prelude__callcc, 0
+    },
+    {
+        "continue", prelude__continue, 0
     },
     {
         "if", prelude__if, 0

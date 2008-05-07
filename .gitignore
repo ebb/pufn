@@ -1,4 +1,4 @@
-build
-cufn.1
-cufn.xcodeproj
+pufn
+*.o
+*~
 

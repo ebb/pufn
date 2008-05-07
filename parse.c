@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "/usr/include/string.h"
+#include <string.h>
 #include "fail.h"
 #include "object.h"
 #include "string.h"

@@ -2,6 +2,7 @@
 
 #include "object.h"
 #include "boolean.h"
+#include "fail.h"
 
 object_t boolean_t;
 object_t boolean_f;
