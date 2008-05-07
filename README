@@ -1,4 +1,5 @@
 pufn is a stack language
 
-see tests.stuf for example code
+$ make
+$ ./pufn tests.stuf
 
