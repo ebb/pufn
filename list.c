@@ -112,3 +112,15 @@ void list_initialize() {
     list_unbox(list_nil)[0] = list_nil;
     list_unbox(list_nil)[1] = list_nil;
 }
+
+object_t list_pop(object_t *self) {
+    object_t head, tail;
+    head = list_head(*self);
+    tail = list_tail(*self);
+    *self = tail;
+    return head;
+}
+
+void list_push(object_t *self, object_t object) {
+    *self = list_new(object, *self);
+}

@@ -14,6 +14,7 @@
 #include "dictionary.h"
 #include "machine.h"
 #include "parse.h"
+#include "print.h"
 
 /* TODO: parse strings
  *  treat CHAR: " specially during tokenization
@@ -33,16 +34,18 @@ static int parse_line;
 static int parse_column;
 static int parse_line_count;
 
-object_t parse_file(machine_t *machine, const char *filename) {
+machine_t *parse_file(machine_t *machine) {
     FILE *file;
     object_t phony_word;
-    file = fopen(filename, "r");
+    object_t filename;
+    filename = list_pop(&machine->core.data);
+    file = fopen(string_unbox(filename), "r");
     if (file == 0)
         fail();
     parse_line_count = 0;
     while (fgets(parse_line_buffer, PARSE_LINE_MAX, file) != 0) {
         parse_text[parse_line_count] =
-            (char *)malloc(strlen(parse_line_buffer));
+            (char *)malloc(strlen(parse_line_buffer) + 1);
         strcpy(parse_text[parse_line_count], parse_line_buffer);
         ++parse_line_count;
     }
@@ -50,7 +53,8 @@ object_t parse_file(machine_t *machine, const char *filename) {
     parse_line = 0;
     parse_column = 0;
     phony_word = word_new(string_new(""), list_nil, boolean_f);
-    return parse_until_word(machine, phony_word);
+    list_push(&machine->core.data, phony_word);
+    return parse_until_word(machine);
 }
 
 int parse_is_parsing_word(object_t word) {
@@ -76,7 +80,9 @@ machine_t *parse_quote(machine_t *machine) {
     object_t quote;
     dictionary = machine->dictionary;
     delimiter = dictionary_find(dictionary, string_new("]"));
-    quote = parse_until_word(machine, delimiter);
+    list_push(&machine->core.data, delimiter);
+    machine = parse_until_word(machine);
+    quote = list_pop(&machine->core.data);
     machine->core.data = list_new(list_new_1(quote), machine->core.data);
     return machine;
 }
@@ -92,16 +98,21 @@ machine_t *parse_definition(machine_t *machine) {
         object_t word;
         word = word_new(name, list_nil, boolean_f);
         machine->dictionary = dictionary_insert(dictionary, word);
-        quote = parse_until_word(machine, delimiter);
+        list_push(&machine->core.data, delimiter);
+        machine = parse_until_word(machine);
+        quote = list_pop(&machine->core.data);
         word_set_definition(word, quote);
     } else
         fail();
+    machine->core.data = list_new(list_nil, machine->core.data);
     return machine;
 }
 
-object_t parse_until_word(machine_t *machine, object_t stop_word) {
+machine_t *parse_until_word(machine_t *machine) {
+    object_t stop_word;
     object_t parse_stack;
     object_t object;
+    stop_word = list_pop(&machine->core.data);
     parse_stack = list_nil;
 label_scan_loop:
     if (parse_scan(machine, &object)) {
@@ -121,11 +132,8 @@ label_scan_loop:
         goto label_scan_loop;
     }
 label_done:
-    return list_reverse(parse_stack);
-}
-
-void parse_define(object_t word, object_t quote) {
-    word_set_definition(word, quote);
+    list_push(&machine->core.data, list_reverse(parse_stack));
+    return machine;
 }
 
 int parse_still_parsing() {

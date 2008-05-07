@@ -1,5 +1,6 @@
 /* public domain */
 
+void list_initialize();
 object_t list_new(object_t, object_t);
 object_t *list_unbox(object_t);
 object_t list_nil;
@@ -15,4 +16,5 @@ object_t list_reverse(object_t);
 object_t list_append(object_t, object_t);
 object_t list_nth(object_t, int);
 object_t list_replace_nth(object_t, int, object_t);
-void list_initialize();
+object_t list_pop(object_t *);
+void list_push(object_t *, object_t);

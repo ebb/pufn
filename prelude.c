@@ -1,6 +1,7 @@
 /* public domain */
 
 #include <stdio.h>
+#include <string.h>
 #include "object.h"
 #include "fixnum.h"
 #include "word.h"
@@ -98,10 +99,7 @@ machine_t *prelude__if(machine_t *machine) {
     qf = prelude_pop(machine);
     qt = prelude_pop(machine);
     c = prelude_pop(machine);
-    if (boolean_unbox(c))
-        prelude_push(machine, qt);
-    else
-        prelude_push(machine, qf);
+    prelude_push(machine, object_eq(c, boolean_f) ? qf : qt);
     return prelude__call(machine);
 }
 
@@ -221,6 +219,77 @@ machine_t *prelude__definition_delimiter(machine_t *machine) {
     return machine;
 }
 
+machine_t *prelude__list_p(machine_t *machine) {
+    object_t object, p;
+    object = prelude_pop(machine);
+    p = object_is_list(object) ? boolean_t : boolean_f;
+    prelude_push(machine, p);
+    return machine;
+}
+
+machine_t *prelude__string_p(machine_t *machine) {
+    object_t object, p;
+    object = prelude_pop(machine);
+    p = object_is_string(object) ? boolean_t : boolean_f;
+    prelude_push(machine, p);
+    return machine;
+}
+
+machine_t *prelude__type_tag(machine_t *machine) {
+    object_t object;
+    object = prelude_pop(machine);
+    prelude_push(machine, fixnum_new(object.tag));
+    return machine;
+}
+
+machine_t *prelude__list_head(machine_t *machine) {
+    object_t list;
+    list = prelude_pop(machine);
+    prelude_push(machine, list_head(list));
+    return machine;
+}
+
+machine_t *prelude__list_tail(machine_t *machine) {
+    object_t list;
+    list = prelude_pop(machine);
+    prelude_push(machine, list_tail(list));
+    return machine;
+}
+
+machine_t *prelude__string_equal(machine_t *machine) {
+    object_t a, b, p;
+    b = prelude_pop(machine);
+    a = prelude_pop(machine);
+    p = (0 == strcmp(string_unbox(a), string_unbox(b)))
+        ? boolean_t : boolean_f;
+    prelude_push(machine, p);
+    return machine;
+}
+
+machine_t *prelude__word_definition(machine_t *machine) {
+    object_t word;
+    word = prelude_pop(machine);
+    prelude_push(machine, word_definition(word));
+    return machine;
+}
+
+machine_t *prelude__word_name(machine_t *machine) {
+    object_t word;
+    word = prelude_pop(machine);
+    prelude_push(machine, word_name(word));
+    return machine;
+}
+
+machine_t *prelude__enable_logging(machine_t *machine) {
+    machine_enable_logging();
+    return machine;
+}
+
+machine_t *prelude__disable_logging(machine_t *machine) {
+    machine_disable_logging();
+    return machine;
+}
+
 struct entry {
     const char *name;
     primitive_t definition;
@@ -305,6 +374,36 @@ struct entry entries[] = {
     },
     {
         ";", prelude__definition_delimiter, 0
+    },
+    {
+        "type-tag", prelude__type_tag, 0
+    },
+    {
+        "list?", prelude__list_p, 0
+    },
+    {
+        "string?", prelude__string_p, 0
+    },
+    {
+        "list-head", prelude__list_head, 0
+    },
+    {
+        "list-tail", prelude__list_tail, 0
+    },
+    {
+        "string=", prelude__string_equal, 0
+    },
+    {
+        "enable-logging", prelude__enable_logging, 0
+    },
+    {
+        "disable-logging", prelude__disable_logging, 0
+    },
+    {
+        "word-definition", prelude__word_definition, 0
+    },
+    {
+        "word-name", prelude__word_name, 0
     }
 };
 

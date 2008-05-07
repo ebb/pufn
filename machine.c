@@ -1,6 +1,7 @@
 /* public domain */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "object.h"
 #include "word.h"
@@ -9,14 +10,25 @@
 #include "machine.h"
 #include "primitive.h"
 #include "fail.h"
+#include "print.h"
 
 static machine_t machine_prototype;
+static int machine_logging_p;
 
 void machine_initialize() {
     machine_prototype.core.call = list_nil;
     machine_prototype.core.data = list_nil;
     machine_prototype.retain = list_nil;
     machine_prototype.dictionary = list_nil;
+    machine_disable_logging();
+}
+
+void machine_enable_logging() {
+    machine_logging_p = 1;
+}
+
+void machine_disable_logging() {
+    machine_logging_p = 0;
 }
 
 machine_t *machine_new(object_t dictionary) {
@@ -31,6 +43,29 @@ machine_t *machine_copy(machine_t *self) {
     copy = (machine_t *)malloc(sizeof(machine_t));
     memcpy(copy, self, sizeof(machine_t));
     return copy;
+}
+
+static void on_push(object_t r) {
+    if (machine_logging_p) {
+        printf("push: ");
+        print_object(r);
+        printf("\n");
+    }
+}
+
+static void on_exec(object_t r) {
+    if (machine_logging_p) {
+        printf("exec: ");
+        print_object(r);
+        printf("\n");
+    }
+}
+
+static void on_prim_ret(machine_t *machine) {
+    if (machine_logging_p) {
+        print_object(list_head(machine->core.data));
+        printf("\n");
+    }
 }
 
 static machine_t *machine_loop(machine_t *machine, object_t r) {
@@ -52,15 +87,18 @@ eval:
         else {
             if (object_is_wrapper(r))
                 r = wrapper_unbox(r);
+            on_push(r);
             core->data = list_new(r, core->data);
             goto eval;
         }
     }
 exec:
+    on_exec(r);
     r = word_definition(r);
     if (object_is_primitive(r)) {
         machine = primitive_execute(r, machine);
         core = &machine->core;
+        on_prim_ret(machine);
         goto eval;
     } else
         goto call;

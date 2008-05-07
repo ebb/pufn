@@ -11,4 +11,25 @@ pufn
 5 factorial
 [ \ call 77 ] . newline
 [ 5 . newline continue 6 ] callcc 8
-
+[ 1 2 3 ] [ 2 + ] map
+: = two-dup eq [
+        two-drop t
+    ] [
+        two-dup [ type-tag ] bi eq [
+            dup list? [
+                two-dup [ list-head ] bi
+                = [ [ list-tail ] bi = ] [ two-drop f ] if
+            ] [
+                dup string? [ string= ] [ eq ] if
+            ] if
+        ] [
+            two-drop f
+        ] if
+    ] if ;
+[ ] [ ] =
+1 2 =
+[ 1 2 eq ] [ 1 2 eq ] =
+[ eq 1 eq ] [ eq 1 = ] =
+\ eq dup [ word-name ] bi =
+\ eq \ dup [ word-name ] bi =
+[ 1 [ 2 ] 3 ] [ 1 [ 2 ] 3 ] =

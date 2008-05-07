@@ -1,0 +1,10 @@
+: two-drop drop drop ;
+: dip >r call r> ;
+: slip swap dip ;
+: bi dup >r slip r> call ;
+: over >r dup r> swap ;
+: two-dup over over ;
+: map over [ ] eq [ two-drop [ ] ] [
+        dup >r over list-head >r [ list-tail ] slip map
+        r> r> call swap curry
+    ] if ;

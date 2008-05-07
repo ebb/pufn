@@ -15,3 +15,5 @@ machine_t *machine_new(object_t);
 machine_t *machine_copy(machine_t *);
 machine_t *machine_call(machine_t *, object_t);
 machine_t *machine_execute(machine_t *, object_t);
+void machine_enable_logging();
+void machine_disable_logging();
