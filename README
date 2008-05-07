@@ -1,4 +1,4 @@
 pufn is a stack language
 
-start reading at machine.c: machine_loop()
+see tests.stuf for example code
 
