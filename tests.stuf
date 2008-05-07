@@ -1,3 +1,12 @@
+: pufn \ pufn ;
 : two_plus one_plus one_plus ;
 t f 3 two_plus [ 88 ] \ two_plus
+5 [ two_plus two_plus ] call
+4 \ two_plus execute
+pufn
+: keep swap dup >r swap call r> ;
+: (factorial) dup 1 eq [ drop ] [ [ * ] keep 1 - (factorial) ] if ;
+: factorial 1 swap (factorial) ;
+5 factorial
+[ \ call 77 ] . newline
 

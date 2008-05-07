@@ -13,6 +13,7 @@
 #include "machine.h"
 #include "primitive.h"
 #include "parse.h"
+#include "prelude.h"
 
 machine_t *one_plus(machine_t *machine) {
     object_t *data_stack;
@@ -63,6 +64,7 @@ int main (int argc, const char *argv[]) {
     boolean_initialize();
     list_initialize();
     machine_initialize();
+    prelude_initialize();
     primitive_true = main_primitive("t", true);
     primitive_false = main_primitive("f", false);
     primitive_one_plus = main_primitive("one_plus", one_plus);
@@ -71,7 +73,7 @@ int main (int argc, const char *argv[]) {
     quote_delimiter = main_primitive("]", primitive_fail);
     definition_delimiter = main_primitive(";", primitive_fail);
     primitive_parse_wrapper = main_parsing_primitive("\\", parse_wrapper);
-    dictionary = list_nil;
+    dictionary = prelude;
     dictionary = dictionary_insert(dictionary, primitive_true);
     dictionary = dictionary_insert(dictionary, primitive_false);
     dictionary = dictionary_insert(dictionary, primitive_one_plus);

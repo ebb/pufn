@@ -12,6 +12,7 @@
 #include "block.h"
 #include "machine.h"
 #include "primitive.h"
+#include "wrapper.h"
 
 void print_object(object_t root) {
     switch (root.tag) {
@@ -32,13 +33,18 @@ void print_object(object_t root) {
             break;
         case OBJECT_STRING_TAG:
             printf("\"%s\"", string_unbox(root));
+            break;
         case OBJECT_PRIMITIVE_TAG:
             printf("0x%x", (void *)primitive_unbox(root));
+            break;
         case OBJECT_BOOLEAN_TAG:
             if (object_eq(root, boolean_t))
                 printf("t");
             else
                 printf("f");
+            break;
+        case OBJECT_WRAPPER_TAG:
+            printf("\\ %s", string_unbox(word_name(wrapper_unbox(root))));
             break;
         case OBJECT_BLOCK_TAG:
             printf("0x%x", block_unbox(root));

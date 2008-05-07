@@ -90,9 +90,10 @@ machine_t *parse_definition(machine_t *machine) {
     delimiter = dictionary_find(dictionary, string_new(";"));
     if (parse_token(&name)) {
         object_t word;
-        quote = parse_until_word(machine, delimiter);
-        word = word_new(name, quote, boolean_f);
+        word = word_new(name, list_nil, boolean_f);
         machine->dictionary = dictionary_insert(dictionary, word);
+        quote = parse_until_word(machine, delimiter);
+        word_set_definition(word, quote);
     } else
         fail();
     return machine;

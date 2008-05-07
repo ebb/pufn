@@ -8,6 +8,7 @@
 #include "list.h"
 #include "string.h"
 #include "word.h"
+#include "print.h"
 
 object_t dictionary_new() {
     return list_nil;
