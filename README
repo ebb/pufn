@@ -1,5 +1,5 @@
 pufn is a stack language
 
 $ make
-$ ./pufn tests.stuf
+$ ./pufn library.stuf tests.stuf
 
