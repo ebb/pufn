@@ -6,7 +6,7 @@
 : factorial 1 swap (factorial) ;
 5 factorial
 \ (factorial) word-name [ 77 ] curry . newline
-[ 5 . newline continue 6 ] callcc 8
+[ >r 5 . newline 987 34 2 r> continue 6 ] callcc 8
 [ 1 2 3 ] [ 2 + ] map
 : = two-dup eq [
         two-drop t

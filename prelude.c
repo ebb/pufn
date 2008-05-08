@@ -89,9 +89,17 @@ machine_t *prelude__callcc(machine_t *machine) {
 }
 
 machine_t *prelude__continue(machine_t *machine) {
+    int count;
     object_t continuation;
+    object_t values;
     continuation = prelude_pop(machine);
-    return machine_copy(continuation_unbox(continuation));
+    count = fixnum_unbox(prelude_pop(machine));
+    values = list_nil;
+    while (count-- > 0)
+        values = list_new(prelude_pop(machine), values);
+    machine = machine_copy(continuation_unbox(continuation));
+    machine->core.data = list_reverse_append(values, machine->core.data);
+    return machine;
 }
 
 machine_t *prelude__if(machine_t *machine) {
