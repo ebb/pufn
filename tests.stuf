@@ -1,15 +1,11 @@
-: pufn \ pufn ;
-: one_plus 1 + ;
-: two_plus one_plus one_plus ;
-t f 3 two_plus [ 88 ] \ two_plus
-5 [ two_plus two_plus ] call
-4 \ two_plus execute
-pufn
+: one-plus 1 + ;
+4 [ one-plus one-plus ] call
+4 \ one-plus execute
 : keep swap dup >r swap call r> ;
 : (factorial) dup 1 eq [ drop ] [ [ * ] keep 1 - (factorial) ] if ;
 : factorial 1 swap (factorial) ;
 5 factorial
-[ \ call 77 ] . newline
+\ (factorial) word-name [ 77 ] curry . newline
 [ 5 . newline continue 6 ] callcc 8
 [ 1 2 3 ] [ 2 + ] map
 : = two-dup eq [
@@ -33,3 +29,8 @@ pufn
 \ eq dup [ word-name ] bi =
 \ eq \ dup [ word-name ] bi =
 [ 1 [ 2 ] 3 ] [ 1 [ 2 ] 3 ] =
+
+\ eq word-name string?
+1 type-tag [ ] type-tag
+[ bi ] list-head
+\ bi word-definition
