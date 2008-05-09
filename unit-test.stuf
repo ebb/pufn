@@ -1,0 +1,9 @@
+: called \ called ;
+: expected \ expected ;
+: got \ got ;
+: unit-test [ >r >r [ ] set-data-stack r> call data-stack 1 r> continue ]
+    callcc >r swap r> reverse two-dup = [ drop drop drop ] [
+        called . newline >r >r . newline
+        expected . newline r> . newline
+        got . newline r> . newline
+    ] if ;

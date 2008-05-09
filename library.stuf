@@ -1,10 +1,33 @@
 : two-drop drop drop ;
-: dip >r call r> ;
-: slip swap dip ;
-: bi dup >r slip r> call ;
+: slip >r call r> ;
+: dip swap slip ;
+: nip swap drop ;
+: two-apply dup >r dip r> call ;
 : over >r dup r> swap ;
+: keep over slip ;
+: bi >r keep r> call ;
 : two-dup over over ;
 : map over [ ] eq [ two-drop [ ] ] [
-        dup >r over list-head >r [ list-tail ] slip map
+        dup >r over list-head >r [ list-tail ] dip map
         r> r> call swap curry
     ] if ;
+: = two-dup eq [
+        two-drop t
+    ] [
+        two-dup [ type-tag ] two-apply eq [
+            dup list? [
+                two-dup [ list-head ] two-apply
+                = [ [ list-tail ] two-apply = ] [ two-drop f ] if
+            ] [
+                dup string? [ string= ] [ eq ] if
+            ] if
+        ] [
+            two-drop f
+        ] if
+    ] if ;
+: (factorial) dup 1 eq [ drop ] [ [ * ] keep 1 - (factorial) ] if ;
+: factorial 1 swap (factorial) ;
+: (reverse) dup [ ] eq [ drop ] [
+        [ list-head ] [ list-tail ] bi [ swap curry ] dip (reverse)
+    ] if ;
+: reverse [ ] swap (reverse) ;
