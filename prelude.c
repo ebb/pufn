@@ -298,6 +298,18 @@ machine_t *prelude__disable_logging(machine_t *machine) {
     return machine;
 }
 
+machine_t *prelude__data_stack(machine_t *machine) {
+    prelude_push(machine, machine->core.data);
+    return machine;
+}
+
+machine_t *prelude__set_data_stack(machine_t *machine) {
+    object_t stack;
+    stack = prelude_pop(machine);
+    machine->core.data = stack;
+    return machine;
+}
+
 struct entry {
     const char *name;
     primitive_t definition;
@@ -412,6 +424,12 @@ struct entry entries[] = {
     },
     {
         "word-name", prelude__word_name, 0
+    },
+    {
+        "data-stack", prelude__data_stack, 0
+    },
+    {
+        "set-data-stack", prelude__set_data_stack, 0
     }
 };
 

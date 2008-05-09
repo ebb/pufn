@@ -29,8 +29,10 @@
 \ eq dup [ word-name ] bi =
 \ eq \ dup [ word-name ] bi =
 [ 1 [ 2 ] 3 ] [ 1 [ 2 ] 3 ] =
-
+data-stack . newline
+[ compose ] set-data-stack
 \ eq word-name string?
+data-stack
 1 type-tag [ ] type-tag
 [ bi ] list-head
 \ bi word-definition
