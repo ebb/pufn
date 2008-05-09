@@ -6,7 +6,9 @@
 int object_eq(object_t a, object_t b) {
     if (a.tag != b.tag)
         return 0;
-    if (object_is_fixnum(a))
+    else if (object_is_fixnum(a))
+        return a.data.number == b.data.number;
+    else if (object_is_boolean(a))
         return a.data.number == b.data.number;
     else
         return a.data.pointer == b.data.pointer;
