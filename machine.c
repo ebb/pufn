@@ -45,25 +45,13 @@ machine_t *machine_copy(machine_t *self) {
     return copy;
 }
 
-static void on_push(object_t r) {
+static void on_exec(object_t r, machine_t *machine) {
     if (machine_logging_p) {
-        printf("push: ");
-        print_object(r);
-        printf("\n");
-    }
-}
-
-static void on_exec(object_t r) {
-    if (machine_logging_p) {
-        printf("exec: ");
-        print_object(r);
-        printf("\n");
-    }
-}
-
-static void on_prim_ret(machine_t *machine) {
-    if (machine_logging_p) {
-        print_object(list_head(machine->core.data));
+        printf("exec: "); print_object(r);
+        printf("\n  call: ");
+        print_object(list_take(3, machine->core.call));
+        printf("\n  data: ");
+        print_object(list_take(3, machine->core.data));
         printf("\n");
     }
 }
@@ -87,18 +75,16 @@ eval:
         else {
             if (object_is_wrapper(r))
                 r = wrapper_unbox(r);
-            on_push(r);
             core->data = list_new(r, core->data);
             goto eval;
         }
     }
 exec:
-    on_exec(r);
+    on_exec(r, machine);
     r = word_definition(r);
     if (object_is_primitive(r)) {
         machine = primitive_execute(r, machine);
         core = &machine->core;
-        on_prim_ret(machine);
         goto eval;
     } else
         goto call;
