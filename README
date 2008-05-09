@@ -5,3 +5,11 @@ $ ./pufn library.stuf unit-test.stuf tests.stuf
 
 only failing tests are shown
 
+to try the new kernel:
+
+$ gcc kernel.c
+$ ./a.out ; echo $?
+
+it executes the code: 4 2 + 2 +
+it should print: 8
+
