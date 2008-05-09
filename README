@@ -10,6 +10,9 @@ to try the new kernel:
 $ gcc kernel.c
 $ ./a.out ; echo $?
 
-it executes the code: 4 2 + 2 +
+it executes the code:
+: 2+ 2 + ;
+4 2 + 2+
+
 it should print: 8
 
