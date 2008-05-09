@@ -13,6 +13,7 @@
 #include "machine.h"
 #include "primitive.h"
 #include "wrapper.h"
+#include "continuation.h"
 #include "fail.h"
 
 void print_object(object_t root) {
@@ -46,6 +47,9 @@ void print_object(object_t root) {
             break;
         case OBJECT_WRAPPER_TAG:
             printf("\\ %s", string_unbox(word_name(wrapper_unbox(root))));
+            break;
+        case OBJECT_CONTINUATION_TAG:
+            printf("0x%p", continuation_unbox(root));
             break;
         case OBJECT_BLOCK_TAG:
             printf("0x%p", block_unbox(root));
