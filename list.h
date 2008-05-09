@@ -18,3 +18,4 @@ object_t list_nth(object_t, int);
 object_t list_replace_nth(object_t, int, object_t);
 object_t list_pop(object_t *);
 void list_push(object_t *, object_t);
+object_t list_take(int, object_t);

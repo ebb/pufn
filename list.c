@@ -124,3 +124,11 @@ object_t list_pop(object_t *self) {
 void list_push(object_t *self, object_t object) {
     *self = list_new(object, *self);
 }
+
+object_t list_take(int n, object_t list) {
+    if (n == 0)
+        return list_nil;
+    else
+        return list_new(list_head(list),
+                        list_take(n - 1, list_tail(list)));
+}
