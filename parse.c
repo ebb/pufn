@@ -39,7 +39,10 @@ machine_t *parse_file(machine_t *machine) {
     object_t phony_word;
     object_t filename;
     filename = list_pop(&machine->core.data);
-    file = fopen(string_unbox(filename), "r");
+    if (0 == strcmp("-", string_unbox(filename)))
+        file = stdin;
+    else
+        file = fopen(string_unbox(filename), "r");
     if (file == 0)
         fail();
     parse_line_count = 0;
@@ -84,6 +87,15 @@ machine_t *parse_quote(machine_t *machine) {
     machine = parse_until_word(machine);
     quote = list_pop(&machine->core.data);
     machine->core.data = list_new(list_new_1(quote), machine->core.data);
+    return machine;
+}
+
+machine_t *parse_comment(machine_t *machine) {
+    object_t token;
+  loop:
+    if (parse_token(&token))
+        if (strcmp(")", string_unbox(token)))
+            goto loop;
     return machine;
 }
 

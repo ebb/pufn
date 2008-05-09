@@ -1,17 +1,18 @@
-: two-drop drop drop ;
-: slip >r call r> ;
-: dip swap slip ;
-: nip swap drop ;
-: two-apply dup >r dip r> call ;
-: over >r dup r> swap ;
-: keep over slip ;
-: bi >r keep r> call ;
-: two-dup over over ;
-: map over [ ] eq [ two-drop [ ] ] [
+: two-drop ( x y -- ) drop drop ;
+: slip ( quote x -- x ) >r call r> ;
+: dip ( x quote -- x ) swap slip ;
+: nip ( x y -- y ) swap drop ;
+: two-apply ( x y quote -- x' y' ) dup >r dip r> call ;
+: over ( x y -- x y x ) >r dup r> swap ;
+: keep ( x quote -- x ) over slip ;
+: bi ( x quote quote -- x' x'' ) >r keep r> call ;
+: two-dup ( x y -- x y x y ) over over ;
+: map ( sequence quote -- sequence' )
+    over [ ] eq [ two-drop [ ] ] [
         dup >r over list-head >r [ list-tail ] dip map
         r> r> call swap curry
     ] if ;
-: = two-dup eq [
+: = ( x y -- ? ) two-dup eq [
         two-drop t
     ] [
         two-dup [ type-tag ] two-apply eq [
@@ -25,9 +26,10 @@
             two-drop f
         ] if
     ] if ;
-: (factorial) dup 1 eq [ drop ] [ [ * ] keep 1 - (factorial) ] if ;
-: factorial 1 swap (factorial) ;
-: (reverse) dup [ ] eq [ drop ] [
+: (factorial) ( n!/m! m -- n! )
+    dup 1 eq [ drop ] [ [ * ] keep 1 - (factorial) ] if ;
+: factorial ( n -- n! ) 1 swap (factorial) ;
+: (reverse) ( acc rest -- sequence ) dup [ ] eq [ drop ] [
         [ list-head ] [ list-tail ] bi [ swap curry ] dip (reverse)
     ] if ;
-: reverse [ ] swap (reverse) ;
+: reverse ( sequence -- sequence' ) [ ] swap (reverse) ;

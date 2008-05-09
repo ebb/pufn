@@ -211,11 +211,20 @@ machine_t *prelude__parse_quote(machine_t *machine) {
     return parse_quote(machine);
 }
 
+machine_t *prelude__parse_comment(machine_t *machine) {
+    return parse_comment(machine);
+}
+
 machine_t *prelude__parse_wrapper(machine_t *machine) {
     return parse_wrapper(machine);
 }
 
 machine_t *prelude__quote_delimiter(machine_t *machine) {
+    fail();
+    return machine;
+}
+
+machine_t *prelude__comment_delimiter(machine_t *machine) {
     fail();
     return machine;
 }
@@ -385,10 +394,16 @@ struct entry entries[] = {
         "[", prelude__parse_quote, 1
     },
     {
+        "(", prelude__parse_comment, 1
+    },
+    {
         "\\", prelude__parse_wrapper, 1
     },
     {
         "]", prelude__quote_delimiter, 0
+    },
+    {
+        ")", prelude__comment_delimiter, 0
     },
     {
         ";", prelude__definition_delimiter, 0
