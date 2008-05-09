@@ -35,12 +35,12 @@ static void prelude_push(machine_t *machine, object_t object) {
 }
 
 machine_t *prelude__t(machine_t *machine) {
-    prelude_push(machine, boolean_t);
+    prelude_push(machine, list_new_1(boolean_t));
     return machine;
 }
 
 machine_t *prelude__f(machine_t *machine) {
-    prelude_push(machine, boolean_f);
+    prelude_push(machine, list_new_1(boolean_f));
     return machine;
 }
 
@@ -149,11 +149,9 @@ machine_t *prelude__release(machine_t *machine) {
 
 machine_t *prelude__eq(machine_t *machine) {
     object_t a, b;
-    object_t eq;
     b = prelude_pop(machine);
     a = prelude_pop(machine);
-    eq = object_eq(a, b) ? boolean_t : boolean_f;
-    machine->core.data = list_new(eq, machine->core.data);
+    prelude_push(machine, object_eq(a, b) ? boolean_t : boolean_f);
     return machine;
 }
 
@@ -318,10 +316,10 @@ struct entry {
     
 struct entry entries[] = {
     {
-        "t", prelude__t, 0
+        "t", prelude__t, 1
     },
     {
-        "f", prelude__f, 0
+        "f", prelude__f, 1
     },
     {
          "call", prelude__call, 0
