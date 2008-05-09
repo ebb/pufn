@@ -58,7 +58,7 @@ machine_t *parse_file(machine_t *machine) {
 }
 
 int parse_is_parsing_word(object_t word) {
-    return boolean_unbox(word_parsing_p(word));
+    return !object_eq(boolean_f, word_parsing_p(word));
 }
 
 machine_t *parse_wrapper(machine_t *machine) {
