@@ -1,5 +1,7 @@
 pufn is a stack language
 
 $ make
-$ ./pufn library.stuf tests.stuf
+$ ./pufn library.stuf unit-test.stuf tests.stuf
+
+only failing tests are shown
 
